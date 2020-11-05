@@ -52,7 +52,13 @@ As our code is running on Amazon Web Services, you will also see that we load li
 
 ### Structure of the scripts
 The core files are
-1. generate-data-files.R  This file loads the data from external websites for country and U.S. state/territory COVID daily data.  It also does minimal editing of the data frames to assure common names.  For the U.S. state/territory file, it converts cumulative deaths or cases into deaths reported daily.
+1. generate-data-files.R  This file:
+- loads the data from external websites for country and U.S. state/territory COVID daily data.  
+- does minimal editing of the data frames to assure common names.  
+- for the U.S. state/territory file, it converts cumulative deaths or cases into deaths reported daily.  
+- when running in interactive mode, it creates plots of the input country and U.S. state/territory files and saves as pdf files in the folder /samples
+- creates five CSV files used as input to PowerBI
+   - 
 2. functions.R This file contains the core functions.   In addition to several small auxiliary functions, the main functions are:
 - detect_outlier_dates
 - force_monotonicity
