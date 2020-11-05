@@ -66,6 +66,8 @@ The core files are
     
 2. functions.R This file contains the core functions.   In addition to several small auxiliary functions, the main functions are:
     - detect_outlier_dates
+      - Inputs:  input data frame, threshold to declare an outlier
+      - Output:  a column appended to the data frame with value = TRUE if  
     - force_monotonicity
     - model_phase_change
     - find_phase_dates
@@ -74,8 +76,6 @@ The core files are
 
 
 ### Key parameters
-#### generate-data-files
-
 
 #### functions.R
 function find_start_date_Provost
