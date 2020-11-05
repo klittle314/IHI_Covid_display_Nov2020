@@ -52,24 +52,69 @@ As our code is running on Amazon Web Services, you will also see that we load li
 
 ### Structure of the scripts
 The core files are
-1. generate-data-files.R  This file:
-- loads the data from external websites for country and U.S. state/territory COVID daily data.  
-- does minimal editing of the data frames to assure common names.  
-- for the U.S. state/territory file, it converts cumulative deaths or cases into deaths reported daily.  
-- when running in interactive mode, it creates plots of the input country and U.S. state and territory files and saves the plots as pdf file in a folder named samples.
-- creates five comma-separated value files used as input to PowerBI, writing the files to a folder named output
-  - Dates by Phase II.csv, a file used to show the count of U.S. states and territories in one of the four Epochs.
-  - NYT Daily Multiphase.csv, a file with the control chart parameters for the U.S. raw death series
-  - NYT Daily Multiphase ADJ.csv, a file with the control chart parameters for the U.S. adjusted death series
-  - Country Daily MultiPhase.csv, a file with the control chart parameters for the country raw death series
-  - Country Daily MultiPhase ADJ.csv, a file with the control chart parameters for the country adjusted death series
+1. generate-data-files.R.  This file:
+    - loads the data from external websites for country and U.S. state/territory COVID daily data.  
+    - does minimal editing of the data frames to assure common names.  
+    - for the U.S. state/territory file, it converts cumulative deaths or cases into deaths reported daily.  
+    - when running in interactive mode, it creates plots of the input country and U.S. state and territory files and saves the plots as pdf file in a folder named samples.
+    - creates five comma-separated value files used as input to PowerBI, writing the files to a folder named output
+      - Dates by Phase II.csv, a file used to show the count of U.S. states and territories in one of the four Epochs.
+      - NYT Daily Multiphase.csv, a file with the control chart parameters for the U.S. raw death series
+      - NYT Daily Multiphase ADJ.csv, a file with the control chart parameters for the U.S. adjusted death series
+      - Country Daily MultiPhase.csv, a file with the control chart parameters for the country raw death series
+      - Country Daily MultiPhase ADJ.csv, a file with the control chart parameters for the country adjusted death series
     
 2. functions.R This file contains the core functions.   In addition to several small auxiliary functions, the main functions are:
-- detect_outlier_dates
-- force_monotonicity
-- model_phase_change
-- find_phase_dates
+    - detect_outlier_dates
+    - force_monotonicity
+    - model_phase_change
+    - find_phase_dates
 
-find_start_date_Provost:  A function that determines dates for analysis based on data properties, along with c-chart parameters
-    - Inputs:  input data frame, specified location, start date for analysis
-    - Outputs: a list with date of first reported death, date of signal on c-control chart, center line for c-chart, upper control limit for c-chart 
+
+
+
+### Key parameters
+#### global.R
+*defStartdate*:  the default start date for analysis, set to NA to have the choice box on the user interface be blank.  Start date for analysis is typically the date of first event; however, the user may over-ride this choice by entering a date in the drop-down box 'Custom start date for calculations instead of date of first event' 
+
+*defBuffer*:  the default number of days to add to the display on the plot(s) after the most recent date in the reported event series.  Set to 7 days.
+
+*defBaseline*:  the default number of days to use as the maximum number of records used in the exponential fit; however, the user may over-ride this choice by entering a number of days in the numeric input box 'Maximum days used to compute exponential growth line and limits'.  If the value for baseline days exceeds the available number of records, all available records are used.  Set to 21 days.
+
+#### helper.R
+function find_start_date_Provost
+
+  *cc_length*:  set to 20; the number of records used to compute the c-chart parameters unless there is an unusually long run of zero event days after the first event. 
+  
+  *Australia_nudge*:  set to 5; an adjustment to the cc_length in honor of Australia which @4-12-2020 had an initial series length 25 deaths and    then c-chart signal at the next record.  Series characterized by long strings of zeros in initial set of records.
+  
+  *Provost_start_count*:  set to 8; the number of events to observe in the event series before starting to compute the c-chart parameters.
+   
+  *Rule_shift_length*: set to 8; the number of consecutive values above the center line to be declared a signal of special cause on the c-chart
+  
+ function create_stages_Provost
+  
+  *min_length_chart*: set to 5; the minimum number of days with events > 0 to use in computing the exponential fit (linear fit based on log10(deaths).
+
+### Notes on ghosting
+
+### Notes on adjusting
+### Notes on computations related to the c-chart
+The function find_start_date_Provost calculates the c-chart center line and upper control limit.  As described above, the c-chart calculations are based on several other parameters.  The c-chart calculations require at least 8 non-zero events; the maximum number of records used for the c-chart calculations is *cc_length*, set to 20.  As the find_start_date_Provost function iterates through the records, the calculation stops as soon as a special cause signal is detected (either a single point above the upper control limit or a series of eight consecutive values above the center line).  Thus, if you vary the starting date of the analysis, the number of points used in the c-chart calculation can vary depending on whether the initial trial records include any special cause signals.  We designed the c-chart calculations to identify the tentative starting point of exponential growth and recognize this approach might not reproduce the c-chart designed by an analyst to look at a sequence of events.  An analyst might require a minimum number of records (e.g. 15 or 20) and iteratively remove points that generate special cause signal(s).
+
+### Notes on computations related to the fit of the regression line
+#### Calculation of the control chart limits using residuals from linear regression on log10 deaths
+The code uses the median moving range to estimate 'sigma-hat' in the calculation of the individuals control chart.  Hence the multiplier 3.14 to compute the upper and lower control limits.  The median moving range is more robust to one or two large point-to-point ranges relative to the average moving range.  Usually, use of the average moving range requires two stages:  examine moving ranges to determine if there are any that are unusually large on a chart of moving ranges; discard any ranges that exceed the upper control limit on the range chart, and recalculate the limits on the individuals chart.  We chose to use the median approach to simplify the derivation of the individuals control chart limits.
+
+#### Use of 95% confidence interval for the slope of the regression fit
+In function make_charts, we use the lower bound of the 95% confidence interval derived from the linear regression model to determine whether or not the slope is meaningfully different from zero.  If the lower bound is less than zero, we report the linear regression parameters on the calculations tab but do not show an exponential fit and exponential limits in the basic display, nor do we show the log10 chart.
+
+### Limitations of the current method
+(a) In Epoch 3, the log transformation stretches the scale of the control limits when there are multiple days close to zero:  e.g. Georgia raw data (upper limit increase in phase 5....the method is saying that on the original scale we could expect occaisionaly  much higher values and not declare a change in phase.)  Also seen in Wisconsin series.
+(b) Other than the initial phase in Epoch 1, we require TWO points sequentially above the upper limit to signal a special cause (saying that we are seeing more than 'usual' variation in the death series and we are dampening the reaction by requiring a stronger signal).  A single large value sometimes reflects a 'data dump' by the reporting entity and we want to avoid reacting to a single point.
+(c) turning off the 2 points BELOW the lower limit--especially on days with consecutive low counts ...--TURN OFF IN EPOCHS 1 and 4. 
+(d) ghost that is induced by adjustment:  Florida case  ELIMINATE THIS ISSUE
+(e) method seems to work better for larger counts (e.g. illinois vs Idaho--in places with small counts the typical variation is more than expected by the )
+(f) Epochs 2 and 3: requiring 21 records before calculating the limits can lead to special cause signals within the 21 e.g. 8 above and 8 below (signal in Iran with points above in the adjusted version in Sept:   we don't look for signals until we have 21 points, but then there is already a run above mean) (signal in Turkey in phase end of Sept, start of October) (2 below lower limit in USA, phase in September)
+(g) Louisiana: the adjustment is done on the log10 scale.  However, when the values are fitted, we set ZERO values to NA before the fit.   Hence, in the calculations, the exact zero values are NEVER adjusted.  However, the model also IGNORES the zero values.   So the visual display shows the exact zeros, the midline and limits ignore the exact zeros.  IN the Louisiana case, it appears to work out (two aspects of the model fit cancel each other out):  Louisiana basically is reporting only six days a week for weeks starting in mid-summer.   However, in other cases, if there a record has zero value in the series, we will not use the record to fit the series, which has the effect of biasing the curve upward.   Thus when we are in Epoch 2 or 3 and have reported zeros, we have an issue. Compare to Poisson regression.
+(h) Look at raw and adjusted....More generally, Louisiana illustrates my contention that the message in the charts may be something like an interpolation between the ‘raw’ and the ‘adjusted’.   I think any display should allow the user to see both….  (appeal back to Deming citing Shewhart: "Presentation of results, to be optimally useful, and to be good science, must conform to Shewhart’s rule: viz., preserve, for the uses intended, all the evidence in the original data.” (W.E. Deming, “On probability as a basis for action”, American Statistician, 29, No. 4., 148).)
