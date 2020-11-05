@@ -57,8 +57,13 @@ The core files are
 - does minimal editing of the data frames to assure common names.  
 - for the U.S. state/territory file, it converts cumulative deaths or cases into deaths reported daily.  
 - when running in interactive mode, it creates plots of the input country and U.S. state and territory files and saves the plots as pdf file in a folder named samples.
-- creates five CSV files used as input to PowerBI
-   - 
+- creates five comma-separated value files used as input to PowerBI, writing the files to a folder named output
+  - Dates by Phase II.csv, a file used to show the count of U.S. states and territories in one of the four Epochs.
+  - NYT Daily Multiphase.csv, a file with the control chart parameters for the U.S. raw death series
+  - NYT Daily Multiphase ADJ.csv, a file with the control chart parameters for the U.S. adjusted death series
+  - Country Daily MultiPhase.csv, a file with the control chart parameters for the country raw death series
+  - Country Daily MultiPhase ADJ.csv, a file with the control chart parameters for the country adjusted death series
+    
 2. functions.R This file contains the core functions.   In addition to several small auxiliary functions, the main functions are:
 - detect_outlier_dates
 - force_monotonicity
