@@ -48,7 +48,7 @@ library(ggplot2)
 library(httr)
 
 ```
-As our code is running on Amazon Web Services, you will also see that we load library(aws.s3).
+As our code is running on Amazon Web Services, you will also see that we load `library(aws.s3)`.
 
 ### Structure of the scripts
 The core files are
