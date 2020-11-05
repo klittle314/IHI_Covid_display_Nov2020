@@ -39,13 +39,26 @@ if (!file.exists(data_file_state)) {
 
 [Click here to download the latest version](https://github.com/klittle314/IHI_Covid_display_Nov2020/archive/master.zip) 
 
-Make sure you have installed the following libraries and dependencies; these are shown at the top of the global.R file.  
+Alternatively, if you understand how repositories work, you can fork the master branch for your use.
+
+Make sure you have installed the following libraries and dependencies referenced in the generate-data-files.R script  
 
 ```
-library(tidyverse)
-library(readxl)
-library(utils)
+library(ggplot2)
 library(httr)
-library(DT)
 
 ```
+As our code is running on Amazon Web Services, you will also see that we load library(aws.s3).
+
+### Structure of the scripts
+The core files are
+1. generate-data-files.R  This file loads the data from external websites for country and U.S. state/territory COVID daily data.  It also does minimal editing of the data frames to assure common names.  For the U.S. state/territory file, it converts cumulative deaths or cases into deaths reported daily.
+2. functions.R This file contains the core functions.   In addition to several small auxiliary functions, the main functions are:
+- detect_outlier_dates
+- force_monotonicity
+- model_phase_change
+- find_phase_dates
+
+find_start_date_Provost:  A function that determines dates for analysis based on data properties, along with c-chart parameters
+    - Inputs:  input data frame, specified location, start date for analysis
+    - Outputs: a list with date of first reported death, date of signal on c-control chart, center line for c-chart, upper control limit for c-chart 
