@@ -67,8 +67,10 @@ The core files are
 2. functions.R This file contains the core functions.   In addition to several small auxiliary functions, the main functions are:
     - detect_outlier_dates
       - Inputs:  input data frame, threshold to declare an outlier
-      - Output:  a column appended to the data frame with value = TRUE if  
+      - Output:  a column appended to the data frame with value = TRUE if the deaths value for a given day is assessed as an outlier 
     - force_monotonicity
+      - Input:  vector of deaths by state or territory from the New York Times source
+      - Ouput:  vector of deaths for the specific state or territory with negative values accounted for (see below)
     - model_phase_change
     - find_phase_dates
 
