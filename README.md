@@ -94,7 +94,11 @@ The core files are
       - Ouput:  vector of deaths for the specific state or territory with negative values accounted for (see below)
     - model_phase_change, a function that detects whether the series indicates the start of a new phase in Epochs 2 or 3.
       - Inputs:  a data fame, subsetted to records such that the date > date_phase_end & date <= min(date_phase_end + 21, date_max, na.rm = TRUE); the name of the series to model, in our case the death series.
-    - find_phase_dates, a function that 
+      - Output: a list that contains the linear model fit to the raw data values; the average log10 deaths; a logical value indicating the sign (plus or minus) of the slope of the log10 linear model; a logical value indicating whether or not the slope of the log10 linear model is statistically significant (p < .05); the median moving range of the residuals from the linear model fit.
+    - find_phase_dates, a function that does the 'heavy lifting'; this function checks for beginning and end of phases and generates the control chart parameters for each phase.
+      - Inputs:  a data frame with the death series and indicators of ghosted data, by location; a logical variable to adjust the data for within week seasonality; a logical variable to look for ghosted values.
+      - Output:  a data frame that appends new columns to the input data frame:  indicators of epochs and phases within epochs, start dates for phases; control chart parameters (midline and upper and lower control imits) for each phase.
+      
 
 
 
