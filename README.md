@@ -180,14 +180,18 @@ In model_phase_change, we use the test of significance and the sign of the seria
 |   3   | p >= .05:  neither growth nor decay |
 
 
-### Limitations of the current method
-1.  In Epoch 3, the log transformation stretches the scale of the control limits when there are multiple days close to zero.   For example, in the Wisconsin raw data (upper limit increase in phase 4 ia above the upper limit in phase 3 despite the average value in phase 4 below the average value in phase 3. Our method implies we could expect occaisionaly  much higher values in phase 4 relative to phase 3 and not declare a change in phase.
+### Details and limitations of the current method
+**Limit anomaly** In Epoch 3, the log transformation stretches the scale of the control limits when there are multiple days close to zero.   For example, in the Wisconsin raw data (upper limit increase in phase 4 ia above the upper limit in phase 3 despite the average value in phase 4 below the average value in phase 3. Our method implies we could expect occaisionaly  much higher values in phase 4 relative to phase 3 and not declare a change in phase.
 
-!(limit anomaly)[]
-(b) Other than the initial phase in Epoch 1, we require TWO points sequentially above the upper limit to signal a special cause (saying that we are seeing more than 'usual' variation in the death series and we are dampening the reaction by requiring a stronger signal).  A single large value sometimes reflects a 'data dump' by the reporting entity and we want to avoid reacting to a single point.
-(c) turning off the 2 points BELOW the lower limit--especially on days with consecutive low counts ...--TURN OFF IN EPOCHS 1 and 4. 
-(d) ghost that is induced by adjustment:  Florida case  ELIMINATE THIS ISSUE
-(e) method seems to work better for larger counts (e.g. illinois vs Idaho--in places with small counts the typical variation is more than expected by the )
+!(Wisconsin limit anomaly)[https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/images/Wisconsin%20limit%20anomaly%202020-11-08_15-56-51.jpg]
+
+**Modification of 'Shewhart criterion 1':  points beyond the control limits and overdispersion**  We modified the Shewhart criterion.  Except for the initial phase of Epoch 1 or Epoch 4, we require two points above the control limits in Epochs 2 and 3 to signal the start of a new phase.  We expect to see more than 'usual' variation in the death series.  We dampen the trigger of a new phase by requiring a stronger signal.  For example, a single large value sometimes reflects a 'data dump' by the reporting entity that is not screened by our ghosting function.
+
+Similarly, we require two points below the lower limit in Epochs 2 and 3.   But not in Epochs 1 and 4.  CHECK THIS.
+
+In locations with small counts, the variation sometimes appears more than expected in the Poisson model underlying the c-chart.  More complicated charts based on a distribution like the negative binomial can handle extra dispersion but we elected to stay with c-charts and modify the signal rule.   Idaho in phase 4 illustrates the over-disperson and the consequence of requiring two points above the control limits to indicate a start of a new phase.
+
+![Idaho overdispersion](
 (f) Epochs 2 and 3: requiring 21 records before calculating the limits can lead to special cause signals within the 21 e.g. 8 above and 8 below (signal in Iran with points above in the adjusted version in Sept:   we don't look for signals until we have 21 points, but then there is already a run above mean) (signal in Turkey in phase end of Sept, start of October) (2 below lower limit in USA, phase in September)
 (g) Louisiana: the adjustment is done on the log10 scale.  However, when the values are fitted, we set ZERO values to NA before the fit.   Hence, in the calculations, the exact zero values are NEVER adjusted.  However, the model also IGNORES the zero values.   So the visual display shows the exact zeros, the midline and limits ignore the exact zeros.  IN the Louisiana case, it appears to work out (two aspects of the model fit cancel each other out):  Louisiana basically is reporting only six days a week for weeks starting in mid-summer.   However, in other cases, if there a record has zero value in the series, we will not use the record to fit the series, which has the effect of biasing the curve upward.   Thus when we are in Epoch 2 or 3 and have reported zeros, we have an issue. Compare to Poisson regression.
 (h) Look at raw and adjusted....More generally, Louisiana illustrates my contention that the message in the charts may be something like an interpolation between the ‘raw’ and the ‘adjusted’.   I think any display should allow the user to see both….  (appeal back to Deming citing Shewhart: "Presentation of results, to be optimally useful, and to be good science, must conform to Shewhart’s rule: viz., preserve, for the uses intended, all the evidence in the original data.” (W.E. Deming, “On probability as a basis for action”, American Statistician, 29, No. 4., 148).)
