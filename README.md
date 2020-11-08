@@ -125,22 +125,26 @@ We observed that some locations reported deaths in a way that two days a week te
 
 ![Illinois series](https://raw.githubusercontent.com/klittle314/IHI_Covid_display_Nov2020/main/images/Illinois%20Raw%20Deaths%20Seasonality%202020-11-08_13-43-19.jpg)
 
-
+Illinois raw deaths epoch and phase start dates
  -- Epoch 1, phase 1 overall, phase 1 within epoch: 2020-03-17
+ 
  -- Epoch 2, phase 2 overall, phase 1 within epoch: 2020-03-27
  -- Epoch 3, phase 3 overall, phase 1 within epoch: 2020-04-25
+ 
  -- Epoch 3, phase 4 overall, phase 2 within epoch: 2020-06-13
+ 
  -- Epoch 3, phase 5 overall, phase 3 within epoch: 2020-07-05
+ 
  -- Epoch 3, phase 6 overall, phase 4 within epoch: 2020-10-06
  
-The excerpt of the data records shows that deaths reported on Sunday and Monday are systematically lower than the other days of the week.  This appears to be an administrative source of variation in the death series, a special cause of variation, which will affect the control limits. Two low values each week will tend to inflate the variation and widen the control limits.  
+The excerpt of the Illinois data records shows that deaths reported on Sunday and Monday are systematically lower than the other days of the week.  This appears to be an administrative source of variation in the death series, a special cause of variation, which will affect the control limits. Two low values each week will tend to inflate the variation and widen the control limits.  
 
-We restricted the adjustment to data within Epochs 2 and 3 as the control limits are derived from the range of the day to day differences.  In Epochs 1 and 4, we did not apply the adjustment; the c-charts are defined solely by the average value of the series and may be dominated by many days with zero deaths.
+Observing this pattern in multiple data series, we sought to eliminate the special cause of variation.  We limited the adjustment to data within Epochs 2 and 3 as the control limits are derived from the range of the day to day differences.  In Epochs 1 and 4, we did not apply the adjustment; the c-charts are defined solely by the average value of the series and may be dominated by many days with zero deaths.
 
 Here's the logic for adjustment:
 
-1.  Fit the raw series, phases and epochs.
-2.  Within each fitted phase for Epochs 2 and 3 with 21 records used to fit the exponential:
+1.  Fit the original ("raw") series to obstain phases and epochs.
+2.  Within each fitted phase with at least 21 records for Epochs 2 and 3 and using the linear fit to the log10 deaths:
 (a) compute the residuals as (observed - midline) on the log10 scale.  
 (b) by day of week, get the median of the residuals.   This is the adjustment for day of week.
 (c) compute the adjustment:   adjusted log10 death = log10 observed death - adjustment for day of week.
@@ -151,6 +155,12 @@ Here's the logic for adjustment:
 3. Stitch together the adjusted data, phase by phase.
 
 Once we have the adjusted data series, apply the algorithm to get the adjusted epochs and phases.
+
+The adjustment logic will fail to adjust some days of the week if the state or country reports zero deaths consistently on those days.  The failure stems from our fitting of log10 deaths:  before fitting, we set the zero deaths to missing.  This means that the day with zero deaths never enters the calculation for adjustment.  See below for discussion of this limitation to our approach. 
+
+Louisiana provides a clear example of the situation, with reported deaths on Saturdays identically zero for three months starting in July:
+
+
 
 ### computations related to the c-chart
 The function find_start_date_Provost calculates the c-chart center line and upper control limit.  As described above, the c-chart calculations are based on several other parameters.  The c-chart calculations require at least 8 non-zero events; the maximum number of records used for the c-chart calculations is *cc_length*, set to 20.  As the find_start_date_Provost function iterates through the records, the calculation stops as soon as a special cause signal is detected (either a single point above the upper control limit or a series of eight consecutive values above the center line).  Thus, if you vary the starting date of the analysis, the number of points used in the c-chart calculation can vary depending on whether the initial trial records include any special cause signals.  We designed the c-chart calculations to identify the tentative starting point of exponential growth and recognize this approach might not reproduce the c-chart designed by an analyst to look at a sequence of events.  An analyst might require a minimum number of records (e.g. 15 or 20) and iteratively remove points that generate special cause signal(s).
