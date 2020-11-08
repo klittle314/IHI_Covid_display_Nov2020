@@ -180,10 +180,10 @@ In model_phase_change, we use the test of significance and the sign of the seria
 |   3   | p >= .05:  neither growth nor decay |
 
 
-
-
 ### Limitations of the current method
-(a) In Epoch 3, the log transformation stretches the scale of the control limits when there are multiple days close to zero:  e.g. Georgia raw data (upper limit increase in phase 5....the method is saying that on the original scale we could expect occaisionaly  much higher values and not declare a change in phase.)  Also seen in Wisconsin series.
+1.  In Epoch 3, the log transformation stretches the scale of the control limits when there are multiple days close to zero.   For example, in the Wisconsin raw data (upper limit increase in phase 4 ia above the upper limit in phase 3 despite the average value in phase 4 below the average value in phase 3. Our method implies we could expect occaisionaly  much higher values in phase 4 relative to phase 3 and not declare a change in phase.
+
+!(limit anomaly)[]
 (b) Other than the initial phase in Epoch 1, we require TWO points sequentially above the upper limit to signal a special cause (saying that we are seeing more than 'usual' variation in the death series and we are dampening the reaction by requiring a stronger signal).  A single large value sometimes reflects a 'data dump' by the reporting entity and we want to avoid reacting to a single point.
 (c) turning off the 2 points BELOW the lower limit--especially on days with consecutive low counts ...--TURN OFF IN EPOCHS 1 and 4. 
 (d) ghost that is induced by adjustment:  Florida case  ELIMINATE THIS ISSUE
