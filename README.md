@@ -123,7 +123,7 @@ The New York Times data table provides cumulative death counts for each U.S. sta
 ### adjusting
 We observed that some locations reported deaths in a way that two days a week tended to be lower than the other five days in each calendar week.  For example, Illinois shows a strong pattern of two days a week lower than the other five, relatively easy to see starting in Epoch 3, phase 1:
 
-![Illinois series]()
+![Illinois series](https://raw.githubusercontent.com/klittle314/IHI_Covid_display_Nov2020/main/images/Illinois%20Raw%20Deaths%20Seasonality%202020-11-08_13-43-19.jpg)
 
 
  -- Epoch 1, phase 1 overall, phase 1 within epoch: 2020-03-17
