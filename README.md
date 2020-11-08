@@ -18,9 +18,9 @@ We use epochs and phases to describe the patterns we observed in the initial dea
 |   3   | post-exponential growth:  flat trajectory or exponential decline | individuals chart fitted to log10 of the death series, back transformed to the original scale |
 |   4   | stability after descent | c-chart on original scale |
 
-Within any Epoch, there will be at least one phase.  For example, within Epoch 1, if  the algorithm does not detect exponential growth but shows increase deaths, additional phases will display c-charts with mean level higher than the first phase.
+Within any Epoch, there will be at least one phase.  For example, within Epoch 1, if  the algorithm does not detect exponential growth but shows increase deaths, additional phases will display c-charts with means higher than the first phase.
 
-
+![phases within Epoch 1](
 
 ## Who can use this project?
 
