@@ -160,18 +160,27 @@ The adjustment logic will fail to adjust some days of the week if the state or c
 
 Louisiana provides a clear example of the situation, with reported deaths on Saturdays identically zero for three months starting in July:
 
-
+![Saturday pattern](https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/images/Louisiana%20Raw%20Deaths%20Seasonality%202020-11-08_15-25-54.jpg)
 
 ### computations related to the c-chart
-The function find_start_date_Provost calculates the c-chart center line and upper control limit.  As described above, the c-chart calculations are based on several other parameters.  The c-chart calculations require at least 8 non-zero events; the maximum number of records used for the c-chart calculations is *cc_length*, set to 20.  As the find_start_date_Provost function iterates through the records, the calculation stops as soon as a special cause signal is detected (either a single point above the upper control limit or a series of eight consecutive values above the center line).  Thus, if you vary the starting date of the analysis, the number of points used in the c-chart calculation can vary depending on whether the initial trial records include any special cause signals.  We designed the c-chart calculations to identify the tentative starting point of exponential growth and recognize this approach might not reproduce the c-chart designed by an analyst to look at a sequence of events.  An analyst might require a minimum number of records (e.g. 15 or 20) and iteratively remove points that generate special cause signal(s).
+The function find_phase_dates calculates the c-chart center line and upper control limit in Epochs 1 and 4.  As described above, the c-chart calculations are based on several other parameters.  The c-chart calculations require at least 8 non-zero deaths; the maximum number of records used for the c-chart calculations is 21.  As the find_phase_dates function iterates through the records, the calculation stops as soon as a special cause signal is detected.  We designed the c-chart calculations to identify the tentative starting point of exponential growth and recognize this approach might not reproduce the c-chart designed by an analyst to look at a sequence of events.  An analyst might require a minimum number of records (e.g. 15 or 20) and iteratively remove points that generate special cause signal(s).  See the additional discussion below on the difference between the rules used in the first phase of Epoch 1 or 4 and subsequent phases within those epochs.
 
 ### computations related to the fit of the regression line
 
 #### Calculation of the control chart limits using residuals from linear regression on log10 deaths
-The code uses the median moving range to estimate 'sigma-hat' in the calculation of the individuals control chart.  Hence the multiplier 3.14 to compute the upper and lower control limits.  The median moving range is more robust to one or two large point-to-point ranges relative to the average moving range.  Usually, use of the average moving range requires two stages:  examine moving ranges to determine if there are any that are unusually large on a chart of moving ranges; discard any ranges that exceed the upper control limit on the range chart, and recalculate the limits on the individuals chart.  We chose to use the median approach to simplify the derivation of the individuals control chart limits.
+The code uses the median moving range to estimate 'sigma-hat' in the calculation of the individuals control chart parameters.  That's why we use the multiplier 3.14 to compute the upper and lower control limits rather than the customary 2.66 value.  The median moving range is more robust to one or two large point-to-point ranges relative to the average moving range.  Usually, use of the average moving range requires two stages:  examine moving ranges to determine if there are any that are unusually large on a chart of moving ranges; discard any ranges that exceed the upper control limit on the range chart, and recalculate the limits on the individuals chart.  We chose to use the median approach to simplify the derivation of the individuals control chart limits.
 
-#### Use of 95% confidence interval for the slope of the regression fit
-In function make_charts, we use the lower bound of the 95% confidence interval derived from the linear regression model to determine whether or not the slope is meaningfully different from zero.  If the lower bound is less than zero, we report the linear regression parameters on the calculations tab but do not show an exponential fit and exponential limits in the basic display, nor do we show the log10 chart.
+#### Use of test of significance for the slope of the regression fit on log10 deaths
+In model_phase_change, we use the test of significance and the sign of the serial day coefficient to determine exponential growth, no evidence of growth or decay, or exponential decline. 
+
+| Epoch | calculation |
+| ----- | ----------- |
+|   2   | p < .05 and slope positive:  exponential growth |
+|   3   | p < .05 and slope negative:  exponential decay  |
+|   3   | p >= .05:  neither growth nor decay |
+
+
+
 
 ### Limitations of the current method
 (a) In Epoch 3, the log transformation stretches the scale of the control limits when there are multiple days close to zero:  e.g. Georgia raw data (upper limit increase in phase 5....the method is saying that on the original scale we could expect occaisionaly  much higher values and not declare a change in phase.)  Also seen in Wisconsin series.
