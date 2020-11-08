@@ -6,16 +6,21 @@ Gareth Parry used SPSS to develop the initial IHI presentation in the spring and
 In September, Kevin Little advised by Lloyd Provost replaced the SPSS code with R code that requires less daily human intervention.   This document describes the R code function and limitations.  The PowerBI visualization remains essentially the same.
 
 ## The foundation of our control chart modeling:  Epochs and phases
-Epidemiologists use phases to describe the structure of a pandemic.  For example, [here](https://www.ncbi.nlm.nih.gov/books/NBK143061/): "The WHO pandemic phases were developed in 1999 and revised in 2005. The phases are applicable to the entire world and provide a global framework to aid countries in pandemic preparedness and response planning."  
+Epidemiologists use phases to describe the structure of a pandemic.  For example, [here](https://www.ncbi.nlm.nih.gov/books/NBK143061/): "The WHO pandemic phases were developed in 1999 and revised in 2005. The phases are applicable to the entire world and provide a global framework to aid countries in pandemic preparedness and response planning." 
 
-We use epochs and phases to describe the patterns we observed in the initial death series for countries like China and states like New York in the United States
+We use epochs and phases to describe the patterns we observed in the initial death series for countries like China and states like New York in the United States; our use of the term phase is potentially confusing to users.
 
+### Table of Epochs
 | Epoch | Description | Control Chart structure |
 | ----- | ----------- | ----------------------- |
-|   1   | pre-exponential growth | c-chart |
+|   1   | pre-exponential growth | c-chart on original scale |
 |   2   | exponential growth | individuals chart fitted to log10 of the death series, back transformed to original scale |
 |   3   | post-exponential growth:  flat trajectory or exponential decline | individuals chart fitted to log10 of the death series, back transformed to the original scale |
-|   4   | 
+|   4   | stability after descent | c-chart on original scale |
+
+Within any Epoch, there will be at least one phase.  For example, within Epoch 1, if  the algorithm does not detect exponential growth but shows increase deaths, additional phases will display c-charts with mean level higher than the first phase.
+
+
 
 ## Who can use this project?
 
