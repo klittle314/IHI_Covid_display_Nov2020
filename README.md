@@ -18,7 +18,7 @@ We use epochs and phases to describe the patterns in data. We first observed the
 |   3   | post-exponential growth:  flat trajectory or exponential decline | individuals chart fitted to log10 of the death series, back transformed to the original scale |
 |   4   | stability after descent | c-chart on original scale |
 
-Within any Epoch, we require at least one phase.  For example, within Epoch 1, if  the algorithm does not detect exponential growth but shows increase deaths, additional phases will display c-charts with means higher than the first phase.
+Within any Epoch, we require at least one phase.  For example, within Epoch 1, if  the algorithm does not detect exponential growth but shows increase deaths, additional phases will display c-charts with means higher than the first phase.  Here's a display of the state of Arkansas death series showing multiple phases within Epoch 1.   The red dot represents a 'ghosted value', likely associated with an administrative action to report an unusually large number of deaths in one day.  See below for discussion of 
 
 ![phases within Epoch 1](https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/images/ARkansas%202%20Nov%202020.jpg)
 
@@ -86,7 +86,7 @@ The core files are
       - Country Daily MultiPhase ADJ.csv, a file with the control chart parameters for the country adjusted death series
     
 2. functions.R This file contains the core functions.   In addition to several small auxiliary functions, we created four functions.  See the notes section below for further explanation of our design choices.
-    - detect_outlier_dates, a function that identifies dates with records deemed to be unusually large.   
+    - detect_outlier_dates, a function that identifies dates with records deemed to be unusually large that will be excluded from creating the control charts. 
       - Inputs:  input data frame; threshold to declare an outlier
       - Output:  a column appended to the data frame with value = TRUE if the deaths value for a given day is assessed as an outlier 
     - force_monotonicity, a function forces U.S. data series to be monotone non-decreasing. 
@@ -116,8 +116,8 @@ function find_start_date_Provost
   
   *min_length_chart*: set to 5; the minimum number of days with events > 0 to use in computing the exponential fit (linear fit based on log10(deaths).
 
-### Notes on flagging and setting aside unusually large values
-The detect_outlier function finds daily records that appear unusually large compared to days preceding and following the record.  During spring 2020, we followed news reports of 'data dumps' and flagged these events manually.  Such data dumps are a simple and clear example of a special cause of variation in the data series.  If you adapt the R code for your own use, we recommend that you allow users to identify records that should be excluded from calculations.
+### Notes on flagging and setting aside unusually large values:  ghosting
+The detect_outlier function finds daily records that appear unusually large compared to days preceding and following the record.  During spring 2020, we followed news reports of 'data dumps' and flagged these events manually.  Such data dumps are a simple and clear example of a special cause of variation in the data series.  If you adapt the R code for your own use, we recommend that you allow users to identify records that should be excluded from calculations.  In our development team, we refer to records flagged by the detect_outlier function as 'ghosted' because the original PowerBI script plotted such values with a pale dot.
 
 ### Notes on monotonicity
 The New York Times data table provides cumulative death counts.  The code differences the cumulative death series to get daily deaths.  The cumulative death count series shows adjustments for 27 states and territories as of 8 November that make the series non-monotone increasing--52 records are less than previous records, within state or territory.  This means that the differenced series will have negative values.   To account adjustment in the cumulative series, the function allocates the negative values to previous records so that the revised series has only non-negative values.
