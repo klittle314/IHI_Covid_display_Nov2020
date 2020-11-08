@@ -1,7 +1,7 @@
 # R scripts to generate control chart limits used by IHI's PowerBI application
 This project implements a method based on control charts to view phases in daily reported deaths from COVID-19. The method was developed by Lloyd Provost, Shannon Provost, Rocco Perla, Gareth Parry, and Kevin Little, with an initial focus on death series and is described [here](https://academic.oup.com/intqhc/advance-article/doi/10.1093/intqhc/mzaa069/5863166).
 
-Gareth Parry used SPSS to develop the initial IHI presentation in the spring and summer of 2020.  His SPSS code created data tables for countries and U.S. states and territories.  Gareth created a PowerBI script to read these tables and created the data displays.  The IHI display is [here](http://www.ihi.org/Topics/COVID-19/Pages/COVID-19-Data-Dashboard.aspx) 
+Gareth Parry used SPSS to develop the initial IHI presentation in the spring and summer of 2020.  His SPSS code created data tables for countries and U.S. states and territories.  Gareth created a PowerBI script to read these tables and created the data displays.  The IHI display is [here](http://www.ihi.org/Topics/COVID-19/Pages/COVID-19-Data-Dashboard.aspx). 
 
 In September, Kevin Little advised by Lloyd Provost replaced the SPSS code with R code that requires less daily human intervention.   This document describes the R code function and limitations.  The PowerBI visualization remains essentially the same.
 
@@ -95,43 +95,46 @@ The core files are
     - model_phase_change, a function that detects whether the series indicates the start of a new phase in Epochs 2 or 3.
       - Inputs:  a data fame, subsetted to records such that the date > date_phase_end & date <= min(date_phase_end + 21, date_max, na.rm = TRUE); the name of the series to model, in our case the death series.
       - Output: a list that contains the linear model fit to the raw data values; the average log10 deaths; a logical value indicating the sign (plus or minus) of the slope of the log10 linear model; a logical value indicating whether or not the slope of the log10 linear model is statistically significant (p < .05); the median moving range of the residuals from the linear model fit.
-    - find_phase_dates, a function that does the 'heavy lifting'; this function checks for beginning and end of phases and generates the control chart parameters for each phase.
+    - find_phase_dates, a function that does the 'heavy lifting'; this function checks for beginning and end of phases and generates the control chart parameters for each phase.  It also adjusts for within-week seasonality in Epochs 2 and 3.
       - Inputs:  a data frame with the death series and indicators of ghosted data, by location; a logical variable to adjust the data for within week seasonality; a logical variable to look for ghosted values.
       - Output:  a data frame that appends new columns to the input data frame:  indicators of epochs and phases within epochs, start dates for phases; control chart parameters (midline and upper and lower control imits) for each phase.
+
+If you run the generate_data_files.R in interactive mode, the code will create pdf files containing plots of the raw and adjusted death series for countries and U.S. states and territories.   The code will also print out the a table of phases and Epochs for each location.
       
-
-
-
-
 ### Key parameters
+These parameters are currently 'hard-coded' but should be expressed as parameters for generalization and sensitivity testing.
 
-#### functions.R
-function find_start_date_Provost
+minimum control-chart length:  at least five records in Epochs 1 and 4 to estimate parameters.  In Epochs 2 and 3, we require 21 records to estimate parameters.  If the exponential fit in Epochs 2 or 3 is being tested with the most current records, we require a minimum of five non-zero records for a preliminary fit.    
 
-  *cc_length*:  set to 20; the number of records used to compute the c-chart parameters unless there is an unusually long run of zero event days after the first event. 
-  
-  *Australia_nudge*:  set to 5; an adjustment to the cc_length in honor of Australia which @4-12-2020 had an initial series length 25 deaths and    then c-chart signal at the next record.  Series characterized by long strings of zeros in initial set of records.
-  
-  *Provost_start_count*:  set to 8; the number of events to observe in the event series before starting to compute the c-chart parameters.
-   
-  *Rule_shift_length*: set to 8; the number of consecutive values above the center line to be declared a signal of special cause on the c-chart
-  
- function create_stages_Provost
-  
-  *min_length_chart*: set to 5; the minimum number of days with events > 0 to use in computing the exponential fit (linear fit based on log10(deaths).
+maximum length of series to establish control chart limits:  21 records, corresponding to three calendar weeks.
 
-### Notes on flagging and setting aside unusually large values:  ghosting
-The detect_outlier function finds daily records that appear unusually large compared to days preceding and following the record.  During spring 2020, we followed news reports of 'data dumps' and flagged these events manually.  Such data dumps are a simple and clear example of a special cause of variation in the data series.  If you adapt the R code for your own use, we recommend that you allow users to identify records that should be excluded from calculations.  In our development team, we refer to records flagged by the detect_outlier function as 'ghosted' because the original PowerBI script plotted such values with a pale dot.
+starting number of deaths:  at least eight deaths are required in the first phase of Epochs 1 and 4 to estimate control chart parameters.  This parameter accounts for the potentially large number of days with zero deaths the first phase of Epochs 1 and 4.
 
-### Notes on monotonicity
-The New York Times data table provides cumulative death counts.  The code differences the cumulative death series to get daily deaths.  The cumulative death count series shows adjustments for 27 states and territories as of 8 November that make the series non-monotone increasing--52 records are less than previous records, within state or territory.  This means that the differenced series will have negative values.   To account adjustment in the cumulative series, the function allocates the negative values to previous records so that the revised series has only non-negative values.
+shift length:  eight consecutive values above or below the midline of a phase signal a special cause and the start of a new phase.
 
-### Notes on adjusting
+## Additional Notes
 
-### Notes on computations related to the c-chart
+### flagging and setting aside unusually large values:  ghosting
+The detect_outlier function examines each daily record to assess if the record is unusually large compared to days preceding and following the record.  During spring 2020, we followed news reports of 'data dumps' and flagged these events manually.  Such data dumps are a simple and clear example of a special cause of variation in the data series.  If you adapt the R code for your own use, we recommend that you allow users to identify records that should be excluded from calculations using your knowledge of the reported death series.  In our development team, we refer to records flagged by the detect_outlier function as 'ghosted' because the original PowerBI script plotted such values with a pale dot.
+
+### monotonicity
+The New York Times data table provides cumulative death counts for each U.S. state or territory.  The code differences the cumulative death series to get daily deaths.  The cumulative death count series shows adjustments for 27 states and territories as of 8 November that make the series non-monotone increasing--52 records are less than previous records, within state or territory.  This means that the differenced series will have negative values.   To eliminate deaths in the cumulative series, the function allocates the negative values to previous records so that the revised series has only non-negative values.
+
+### adjusting
+We observed that some locations reported deaths in a way that two days a week tended to be lower than the other five days in each calendar week.  For example, Illinois shows a strong pattern of two days a week lower than the other five, relatively easy to see starting in Epoch 3, phase 1:
+
+
+ -- Epoch 1, phase 1 overall, phase 1 within epoch: 2020-03-17
+ -- Epoch 2, phase 2 overall, phase 1 within epoch: 2020-03-27
+ -- Epoch 3, phase 3 overall, phase 1 within epoch: 2020-04-25
+ -- Epoch 3, phase 4 overall, phase 2 within epoch: 2020-06-13
+ -- Epoch 3, phase 5 overall, phase 3 within epoch: 2020-07-05
+ -- Epoch 3, phase 6 overall, phase 4 within epoch: 2020-10-06
+
+### computations related to the c-chart
 The function find_start_date_Provost calculates the c-chart center line and upper control limit.  As described above, the c-chart calculations are based on several other parameters.  The c-chart calculations require at least 8 non-zero events; the maximum number of records used for the c-chart calculations is *cc_length*, set to 20.  As the find_start_date_Provost function iterates through the records, the calculation stops as soon as a special cause signal is detected (either a single point above the upper control limit or a series of eight consecutive values above the center line).  Thus, if you vary the starting date of the analysis, the number of points used in the c-chart calculation can vary depending on whether the initial trial records include any special cause signals.  We designed the c-chart calculations to identify the tentative starting point of exponential growth and recognize this approach might not reproduce the c-chart designed by an analyst to look at a sequence of events.  An analyst might require a minimum number of records (e.g. 15 or 20) and iteratively remove points that generate special cause signal(s).
 
-### Notes on computations related to the fit of the regression line
+### computations related to the fit of the regression line
 
 #### Calculation of the control chart limits using residuals from linear regression on log10 deaths
 The code uses the median moving range to estimate 'sigma-hat' in the calculation of the individuals control chart.  Hence the multiplier 3.14 to compute the upper and lower control limits.  The median moving range is more robust to one or two large point-to-point ranges relative to the average moving range.  Usually, use of the average moving range requires two stages:  examine moving ranges to determine if there are any that are unusually large on a chart of moving ranges; discard any ranges that exceed the upper control limit on the range chart, and recalculate the limits on the individuals chart.  We chose to use the median approach to simplify the derivation of the individuals control chart limits.
