@@ -123,6 +123,8 @@ The New York Times data table provides cumulative death counts for each U.S. sta
 ### adjusting
 We observed that some locations reported deaths in a way that two days a week tended to be lower than the other five days in each calendar week.  For example, Illinois shows a strong pattern of two days a week lower than the other five, relatively easy to see starting in Epoch 3, phase 1:
 
+![https://github.com/klittle314/IHI_Covid_display_Nov2020/commit/bee9415d92efeeb5ae4018a5d80a9dfd2c00a3f1]
+
 
  -- Epoch 1, phase 1 overall, phase 1 within epoch: 2020-03-17
  -- Epoch 2, phase 2 overall, phase 1 within epoch: 2020-03-27
@@ -130,6 +132,14 @@ We observed that some locations reported deaths in a way that two days a week te
  -- Epoch 3, phase 4 overall, phase 2 within epoch: 2020-06-13
  -- Epoch 3, phase 5 overall, phase 3 within epoch: 2020-07-05
  -- Epoch 3, phase 6 overall, phase 4 within epoch: 2020-10-06
+ 
+The excerpt of the data records shows that deaths reported on Sunday and Monday are systematically lower than the other days of the week.  This appears to be an administrative source of variation in the death series, a special cause of variation, which will affect the control limits. Two low values each week will tend to inflate the variation and widen the control limits.  
+
+We restricted the adjustment to data within Epochs 2 and 3 as the control limits are derived from the range of the day to day differences.  In Epochs 1 and 4, we did not apply the adjustment; the c-charts are defined solely by the average value of the series and may be dominated by many days with zero deaths.
+
+Here's the logic for adjustment:
+
+
 
 ### computations related to the c-chart
 The function find_start_date_Provost calculates the c-chart center line and upper control limit.  As described above, the c-chart calculations are based on several other parameters.  The c-chart calculations require at least 8 non-zero events; the maximum number of records used for the c-chart calculations is *cc_length*, set to 20.  As the find_start_date_Provost function iterates through the records, the calculation stops as soon as a special cause signal is detected (either a single point above the upper control limit or a series of eight consecutive values above the center line).  Thus, if you vary the starting date of the analysis, the number of points used in the c-chart calculation can vary depending on whether the initial trial records include any special cause signals.  We designed the c-chart calculations to identify the tentative starting point of exponential growth and recognize this approach might not reproduce the c-chart designed by an analyst to look at a sequence of events.  An analyst might require a minimum number of records (e.g. 15 or 20) and iteratively remove points that generate special cause signal(s).
