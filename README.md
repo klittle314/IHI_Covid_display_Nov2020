@@ -193,11 +193,15 @@ In locations with small counts, the variation sometimes appears more than expect
 
 ![Idaho overdispersion](https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/images/Idaho%20overdispersion%202020-11-08_16-23-37.jpg)
 
-**Requirement of 21 records to fit the control chart in Epochs 2 and 3 can lead to problematic fits**  Our requirement of 21 records before calculating control limits in Epochs 2 and 3 can lead to special cause signals within the 21 record span. We simply accept those signals even though such signals undermine the basis for the control limit calculations.  For example, Turkey shows a signal in the beginning of phase 7, with eight consecutive points above the mid line in records six to sixteen of the phase.  An analyst working by hand might identify the signal of special cause in 11 deaths above the midline and decide not to calculate limits or annotate the phase to indicate the poor fit.
+**Requirement of 21 records to fit the control chart in Epochs 2 and 3 can lead to problematic fits**  Our requirement of 21 records before calculating control limits in Epochs 2 and 3 can lead to special cause signals within the 21 record span. We imposed the 21 record rule to align with typical control chart advice to have 20 records to calculate chart parameters and to allow three weeks of data for the adjustment algorithm.  
 
-![Turkey signal in baseline]
+Our method does not react to the signals within the initial 21 records even though such signals undermine the basis for the control limit calculations.  For example, Turkey shows a signal in the beginning of phase 7, with eight consecutive points above the mid line in records six to sixteen of the phase.  An analyst working by hand might identify the signal of special cause in 11 deaths above the midline and decide not to calculate limits or annotate the phase to indicate the poor fit.
 
-Our requirement of 21 records in Epochs 2 and 3 represents a compromise between declaring a new phase based on a small number of values and 
+![Turkey signal in baseline](https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/images/Turkey%20signal%20in%20baseline%202020-11-08_16-35-49.jpg)
+
+Similarly, there are two points below the lower limit in the sixth phase of the United States raw death series, at records 16 and 17 in the phase. Our algorithm ignores this signal of special cause in calculating the parameters of for fitting the phase.
+
+
 
 e.g. 8 above and 8 below (signal in Iran with points above in the adjusted version in Sept:   we don't look for signals until we have 21 points, but then there is already a run above mean) (signal in Turkey in phase end of Sept, start of October) (2 below lower limit in USA, phase in September)
 (g) Louisiana: the adjustment is done on the log10 scale.  However, when the values are fitted, we set ZERO values to NA before the fit.   Hence, in the calculations, the exact zero values are NEVER adjusted.  However, the model also IGNORES the zero values.   So the visual display shows the exact zeros, the midline and limits ignore the exact zeros.  IN the Louisiana case, it appears to work out (two aspects of the model fit cancel each other out):  Louisiana basically is reporting only six days a week for weeks starting in mid-summer.   However, in other cases, if there a record has zero value in the series, we will not use the record to fit the series, which has the effect of biasing the curve upward.   Thus when we are in Epoch 2 or 3 and have reported zeros, we have an issue. Compare to Poisson regression.
