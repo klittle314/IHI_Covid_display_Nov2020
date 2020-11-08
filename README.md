@@ -65,10 +65,10 @@ The core files are
       - Country Daily MultiPhase ADJ.csv, a file with the control chart parameters for the country adjusted death series
     
 2. functions.R This file contains the core functions.   In addition to several small auxiliary functions, the main functions are:
-    - detect_outlier_dates
-      - Inputs:  input data frame, threshold to declare an outlier
+    - detect_outlier_dates, a function that identifies dates with records deemed to be unusually large.  See notes below for further explanation.  
+      - Inputs:  input data frame; threshold to declare an outlier
       - Output:  a column appended to the data frame with value = TRUE if the deaths value for a given day is assessed as an outlier 
-    - force_monotonicity
+    - force_monotonicity, a function forces U.S. data series to be monotone non-decreasing.
       - Input:  vector of deaths by state or territory from the New York Times source
       - Ouput:  vector of deaths for the specific state or territory with negative values accounted for (see below)
     - model_phase_change
@@ -94,7 +94,11 @@ function find_start_date_Provost
   
   *min_length_chart*: set to 5; the minimum number of days with events > 0 to use in computing the exponential fit (linear fit based on log10(deaths).
 
-### Notes on ghosting
+### Notes on flagging and setting aside unusually large values
+The detect_outlier function finds daily records that appear unusually large compared to days preceding and following the record.  During spring 2020, we followed news reports of 'data dumps' and flagged these events manually.  Such data dumps are a simple and clear example of a special cause of variation in the data series.  If you adapt the R code for your own use, we recommend that you allow users to identify records that should be excluded from calculations.
+
+### Notes on monotonicity
+The New York Times data table provides cumulative death counts.  The code differences the cumulative death series to get daily deaths.  The cumulative death count series shows adjustments for 27 states and territories as of 8 November that make the series non-monotone increasing--52 records are less than previous records, within state or territory.  This means that the differenced series will have negative values.   To account adjustment in the cumulative series, the function allocates the negative values to previous records so that the revised series has only non-negative values.
 
 ### Notes on adjusting
 
