@@ -5,6 +5,18 @@ Gareth Parry used SPSS to develop the initial IHI presentation in the spring and
 
 In September, Kevin Little advised by Lloyd Provost replaced the SPSS code with R code that requires less daily human intervention.   This document describes the R code function and limitations.  The PowerBI visualization remains essentially the same.
 
+## The foundation of our control chart modeling:  Epochs and phases
+Epidemiologists use phases to describe the structure of a pandemic.  For example, [here](https://www.ncbi.nlm.nih.gov/books/NBK143061/): "The WHO pandemic phases were developed in 1999 and revised in 2005. The phases are applicable to the entire world and provide a global framework to aid countries in pandemic preparedness and response planning."  
+
+We use epochs and phases to describe the patterns we observed in the initial death series for countries like China and states like New York in the United States
+
+| Epoch | Description | Control Chart structure |
+| ----- | ----------- | ----------------------- |
+|   1   | pre-exponential growth | c-chart |
+|   2   | exponential growth | individuals chart fitted to log10 of the death series, back transformed to original scale |
+|   3   | post-exponential growth:  flat trajectory or exponential decline | individuals chart fitted to log10 of the death series, back transformed to the original scale |
+|   4   | 
+
 ## Who can use this project?
 
 People who have a basic understanding of Shewhart control charts and want to apply control chart methods to characterize how reported events from COVID-19 change over time.  People who have skills in R can modify the code in order to load data sources to replace the built-in sources and to consider other measures, like hospitalizations or ICU cases.
@@ -64,15 +76,16 @@ The core files are
       - Country Daily MultiPhase.csv, a file with the control chart parameters for the country raw death series
       - Country Daily MultiPhase ADJ.csv, a file with the control chart parameters for the country adjusted death series
     
-2. functions.R This file contains the core functions.   In addition to several small auxiliary functions, the main functions are:
-    - detect_outlier_dates, a function that identifies dates with records deemed to be unusually large.  See notes below for further explanation.  
+2. functions.R This file contains the core functions.   In addition to several small auxiliary functions, we created four functions.  See the notes section below for further explanation of our design choices.
+    - detect_outlier_dates, a function that identifies dates with records deemed to be unusually large.   
       - Inputs:  input data frame; threshold to declare an outlier
       - Output:  a column appended to the data frame with value = TRUE if the deaths value for a given day is assessed as an outlier 
-    - force_monotonicity, a function forces U.S. data series to be monotone non-decreasing.
+    - force_monotonicity, a function forces U.S. data series to be monotone non-decreasing. 
       - Input:  vector of deaths by state or territory from the New York Times source
       - Ouput:  vector of deaths for the specific state or territory with negative values accounted for (see below)
-    - model_phase_change
-    - find_phase_dates
+    - model_phase_change, a function that detects whether the series indicates the start of a new phase in Epochs 2 or 3.
+      - Inputs:  a data fame, subsetted to records such that the date > date_phase_end & date <= min(date_phase_end + 21, date_max, na.rm = TRUE); the name of the series to model, in our case the death series.
+    - find_phase_dates, a function that 
 
 
 
