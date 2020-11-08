@@ -139,7 +139,18 @@ We restricted the adjustment to data within Epochs 2 and 3 as the control limits
 
 Here's the logic for adjustment:
 
+1.  Fit the raw series, phases and epochs.
+2.  Within each fitted phase for Epochs 2 and 3 with 21 records used to fit the exponential:
+(a) compute the residuals as (observed - midline) on the log10 scale.  
+(b) by day of week, get the median of the residuals.   This is the adjustment for day of week.
+(c) compute the adjustment:   adjusted log10 death = log10 observed death - adjustment for day of week.
+(d) compute the adjusted death as 10^adjusted log10 death
+(e) normalize the adjusted deaths so that the total adjusted deaths in the phase matches the total deaths in the phase:
+               norm_adjusted death <- adjusted death * (total raw deaths/total adjusted deaths)
+(e) report the adjusted death as round(norm_adjusted death)
+3. Stitch together the adjusted data, phase by phase.
 
+Once we have the adjusted data series, apply the algorithm to get the adjusted epochs and phases.
 
 ### computations related to the c-chart
 The function find_start_date_Provost calculates the c-chart center line and upper control limit.  As described above, the c-chart calculations are based on several other parameters.  The c-chart calculations require at least 8 non-zero events; the maximum number of records used for the c-chart calculations is *cc_length*, set to 20.  As the find_start_date_Provost function iterates through the records, the calculation stops as soon as a special cause signal is detected (either a single point above the upper control limit or a series of eight consecutive values above the center line).  Thus, if you vary the starting date of the analysis, the number of points used in the c-chart calculation can vary depending on whether the initial trial records include any special cause signals.  We designed the c-chart calculations to identify the tentative starting point of exponential growth and recognize this approach might not reproduce the c-chart designed by an analyst to look at a sequence of events.  An analyst might require a minimum number of records (e.g. 15 or 20) and iteratively remove points that generate special cause signal(s).
