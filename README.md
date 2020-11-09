@@ -18,7 +18,7 @@ We use epochs and phases to describe the patterns in Covid death series. We firs
 |   3   | post-exponential growth:  flat trajectory or exponential decline | individuals chart fitted to log10 of the death series, back transformed to the original scale |
 |   4   | stability after descent | c-chart on original scale |
 
-Within any Epoch, we require at least one phase.  For example, within Epoch 1, if  the algorithm does not detect exponential growth but shows increase deaths, additional phases will display c-charts with means higher than the first phase.  Here's a display of the state of Arkansas death series showing multiple phases within Epoch 1.   The red dot represents a 'ghosted value', likely associated with an administrative action to report an unusually large number of deaths in one day.  See below for further discussion of ghosting.
+Within any Epoch, we require at least one phase.  For example, within Epoch 1, if the algorithm does not detect exponential growth but shows an increase in average deaths, additional phases will display c-charts with means higher than the first phase.  Here's a display of the state of Arkansas death series showing multiple phases within Epoch 1.   The red dot represents a 'ghosted value', likely associated with an administrative action to report an unusually large number of deaths in one day.  See below for further discussion of ghosting.
 
 ![phases within Epoch 1](https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/images/ARkansas%202%20Nov%202020.jpg)
 
