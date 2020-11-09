@@ -26,6 +26,9 @@ In other words, in our application, a phase is a distinct time period described 
 
 A location always starts in Epoch 1.  How do we handle a series with rare deaths associated with Covid after exponential growth and decline?  The algorithm for fitting in Epoch 4 is identical to the logic in Epoch 1.  The only distinction is that Epoch 1 characterizes the start of the death series.
 
+Check the detailed table [here](https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/Phase%20and%20Epoch%20logic%209%20November%202020%20public%20version.pdf) to see the rules for transitions from phase to phase within and between epochs.
+
+
 ## Who can use this project?
 
 People who have a basic understanding of Shewhart control charts and want to apply control chart methods to characterize how reported events from COVID-19 change over time.  People who have skills in R can modify the code in order to load data sources to replace the built-in sources and to consider other measures, like hospitalizations or ICU cases.
@@ -186,7 +189,7 @@ In model_phase_change, we use the test of significance and the sign of the seria
 
 **Modification of 'Shewhart criterion 1':  points beyond the control limits and overdispersion**  We modified the Shewhart criterion.  Except for the initial phase of Epoch 1 or Epoch 4, we require two points above the control limits in Epochs 2 and 3 to signal the start of a new phase.  We expect to see more than 'usual' variation in the death series.  We dampen the trigger of a new phase by requiring a stronger signal.  For example, a single large value sometimes reflects a 'data dump' by the reporting entity that is not screened by our ghosting function.
 
-Similarly, we require two points below the lower limit in Epochs 2 and 3.   But not in Epochs 1 and 4.  CHECK THIS.
+Similarly, we require two points below the lower limit in Epochs 2 and 3.   We turn this rule 'off' in Epochs 1 and 4 as we found the combination of within week seasonality (pattern of two days low each week) and presence of zero values tended to generate numerous phase changes that did not appear to reflect the system performance.
 
 In locations with small counts, the variation sometimes appears more than expected in the Poisson model underlying the c-chart.  More complicated charts based on a distribution like the negative binomial can handle extra dispersion but we elected to stay with c-charts and modify the signal rule.   Idaho in phase 4 illustrates the over-disperson and the consequence of requiring two points above the control limits to indicate a start of a new phase.
 
