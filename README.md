@@ -18,7 +18,7 @@ We use epochs and phases to describe the patterns in Covid death series. We firs
 |   3   | post-exponential growth:  flat trajectory or exponential decline | individuals chart fitted to log10 of the death series, back transformed to the original scale |
 |   4   | stability after descent | c-chart on original scale |
 
-Within any Epoch, we require at least one phase.  For example, within Epoch 1, if  the algorithm does not detect exponential growth but shows increase deaths, additional phases will display c-charts with means higher than the first phase.  Here's a display of the state of Arkansas death series showing multiple phases within Epoch 1.   The red dot represents a 'ghosted value', likely associated with an administrative action to report an unusually large number of deaths in one day.  See below for discussion of 
+Within any Epoch, we require at least one phase.  For example, within Epoch 1, if  the algorithm does not detect exponential growth but shows increase deaths, additional phases will display c-charts with means higher than the first phase.  Here's a display of the state of Arkansas death series showing multiple phases within Epoch 1.   The red dot represents a 'ghosted value', likely associated with an administrative action to report an unusually large number of deaths in one day.  See below for further discussion of ghosting.
 
 ![phases within Epoch 1](https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/images/ARkansas%202%20Nov%202020.jpg)
 
@@ -221,3 +221,5 @@ Also, the adjustment procedure can produce values in the adjusted series that ar
 All of the log10 residuals are negative except for the record on 11 October.  Hence the median residual is negative, -0.4215182.  The adjustment rule sets the adjusted deaths as 10^(log10_Deaths - adjustment).   For 11 October, this leads to a raw adjusted value of 469.8272 = 10^(2.2504200 + 0.4215182).  The adjustment algorithm then normalizes the adjusted death series in the phase to have the same total number of deaths as the raw total deaths, which increases the value to 523.   This value is almost twice the value of the maximum observed deaths.
 
 The raw data series is affected by day of week reporting which emdeds a special cause arising from measurement variation in the calculation of the control limits; the adjusted data has an upward bias in the model fit and may induce records larger than any observed in the raw data.  The message in the charts may be an interpolation between the ‘raw’ and the ‘adjusted’.   A display that incorporates adjusted data should allow the user to see the raw data as well.  "Presentation of results, to be optimally useful, and to be good science, must conform to Shewhart’s rule: viz., preserve, for the uses intended, all the evidence in the original data.” (W.E. Deming, “On probability as a basis for action”, *American Statistician*, **29**, No. 4., 148)
+
+
