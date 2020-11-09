@@ -121,7 +121,9 @@ The detect_outlier function examines each daily record to assess if the record i
 The New York Times data table provides cumulative death counts for each U.S. state or territory.  The code differences the cumulative death series to get daily deaths.  The cumulative death count series shows adjustments for 27 states and territories as of 8 November that make the series non-monotone increasing--52 records are less than previous records, within state or territory.  This means that the differenced series will have negative values.   To eliminate deaths in the cumulative series, the function allocates the negative values to previous records so that the revised series has only non-negative values.
 
 ### adjusting
-We observed that some locations reported deaths in a way that two days a week tended to be lower than the other five days in each calendar week.  For example, Illinois shows a strong pattern of two days a week lower than the other five, relatively easy to see starting in Epoch 3, phase 1:
+By June, the development team saw that some locations reported deaths in a way that two days a week tended to be lower than the other five days in each calendar week.  As a result, the IHI application adjusted for a day-of-week effect.  We developed an adjustment in the R code to generate adjusted data, which is then used as input to the epochs and phases algorithm.
+
+For example, Illinois shows a strong pattern of two days a week lower than the other five, relatively easy to see starting in Epoch 3, phase 1:
 
 ![Illinois series](https://raw.githubusercontent.com/klittle314/IHI_Covid_display_Nov2020/main/images/Illinois%20Raw%20Deaths%20Seasonality%202020-11-08_13-43-19.jpg)
 
@@ -205,5 +207,22 @@ Similarly, there are two points below the lower limit in the sixth phase of the 
 
 ![US signal in baseline(https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/images/United%20States%20signal%20in%20baseline%202020-11-08_16-47-50.jpg)
 
-**Bias induced by the adjustment method** (g) Louisiana: the adjustment is done on the log10 scale.  However, when the values are fitted, we set ZERO values to NA before the fit.   Hence, in the calculations, the exact zero values are NEVER adjusted.  However, the model also IGNORES the zero values.   So the visual display shows the exact zeros, the midline and limits ignore the exact zeros.  IN the Louisiana case, it appears to work out (two aspects of the model fit cancel each other out):  Louisiana basically is reporting only six days a week for weeks starting in mid-summer.   However, in other cases, if there a record has zero value in the series, we will not use the record to fit the series, which has the effect of biasing the curve upward.   Thus when we are in Epoch 2 or 3 and have reported zeros, we have an issue. Compare to Poisson regression.
-(h) Look at raw and adjusted....More generally, Louisiana illustrates my contention that the message in the charts may be something like an interpolation between the ‘raw’ and the ‘adjusted’.   I think any display should allow the user to see both….  (appeal back to Deming citing Shewhart: "Presentation of results, to be optimally useful, and to be good science, must conform to Shewhart’s rule: viz., preserve, for the uses intended, all the evidence in the original data.” (W.E. Deming, “On probability as a basis for action”, American Statistician, 29, No. 4., 148).)
+**Bias induced by the adjustment method**  In Epochs 2 and 3, we set zero values to missing before calculating the model fit on the log10 scale.   Eliminating the zero values has the effect of biasing the fit upwards.   We have not characterized the size of the bias.  An alternative to linear model fitted to log10 deaths:  fit a Poisson regression, possibly allowing for over-dispersion. Zero values will be handled directly as observed values.  As this is not the approach used in the initial IHI application, we did not pursue this possibility.
+
+Also, the adjustment procedure can produce values in the adjusted series that are larger than those in the observed series.  Consider Florida's raw death series, phase 5.  Here is the table of relevant values for the Sundays in the series.   
+
+|date     | weekday| New_Deaths| Deaths_adj| log10_Deaths|        adjustment| log10_residuals|
+|:----------|-------:|----------:|----------:|------------:|----------:|---------------:|
+|2020-09-06 |       1|         38|  100.30020|    1.5797836| -0.4215182|      -0.2888926|
+|2020-09-13 |       1|          8|   21.11583|    0.9030900| -0.4215182|      -0.9655863|
+|2020-09-20 |       1|          9|   23.75531|    0.9542425| -0.4215182|      -0.9144337|
+|2020-09-27 |       1|         10|   26.39479|    1.0000000| -0.4215182|      -0.8686762|
+|2020-10-04 |       1|         43|  113.49760|    1.6334685| -0.4215182|      -0.2352078|
+|2020-10-11 |       1|        178|  469.82726|    2.2504200| -0.4215182|       0.3817438|
+|2020-10-18 |       1|         50|  131.97395|    1.6989700| -0.4215182|      -0.1697062|
+|2020-10-25 |       1|         12|   31.67375|    1.0791812| -0.4215182|      -0.7894950|
+|2020-11-01 |       1|         28|   73.90541|    1.4471580| -0.4215182|      -0.4215182|
+
+All of the log10 residuals are negative except for the record on 11 October.  Hence the median residual is negative, -0.4215182.  The adjustment rule sets the adjusted deaths as 10^(log10_Deaths - adjustment).   For 11 October, this leads to a raw adjusted value of 469.8272 = 10^(2.2504200 + 0.4215182).  The adjustment algorithm then normalizes the adjusted death series in the phase to have the same total number of deaths as the raw total deaths, which increases the value to 523.   This value is almost twice the value of the maximum observed deaths.
+
+The raw data series is affected by day of week reporting which emdeds a special cause arising from measurement variation in the calculation of the control limits; the adjusted data has an upward bias in the model fit and may induce records larger than any observed in the raw data.  The message in the charts may be an interpolation between the ‘raw’ and the ‘adjusted’.   A display that incorporates adjusted data should allow the user to see the raw data as well.  "Presentation of results, to be optimally useful, and to be good science, must conform to Shewhart’s rule: viz., preserve, for the uses intended, all the evidence in the original data.” (W.E. Deming, “On probability as a basis for action”, *American Statistician*, **29**, No. 4., 148)
