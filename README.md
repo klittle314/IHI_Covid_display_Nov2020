@@ -6,9 +6,9 @@ Gareth Parry used SPSS to develop the initial IHI presentation in the spring and
 In September, Kevin Little advised by Lloyd Provost replaced the SPSS code with R code that requires less daily human intervention.   This document describes the R code function and limitations.  The PowerBI visualization remains essentially the same.
 
 ## The foundation of our control chart modeling:  Epochs and phases
-Epidemiologists use phases to describe the structure of a pandemic.  The [WHO](https://www.ncbi.nlm.nih.gov/books/NBK143061/) for example says: "The WHO pandemic phases were developed in 1999 and revised in 2005. The phases are applicable to the entire world and provide a global framework to aid countries in pandemic preparedness and response planning." 
+Epidemiologists use the term 'phases' to describe the structure of a pandemic.  The [core WHO pandemic reference](https://www.ncbi.nlm.nih.gov/books/NBK143061/) for example says: "The WHO pandemic phases were developed in 1999 and revised in 2005. The phases are applicable to the entire world and provide a global framework to aid countries in pandemic preparedness and response planning." 
 
-We use epochs and phases to describe the patterns in data. We first observed the patterns in the death series for locations like China and New York in the United States in late winter 2020.  As our use of the term phase is potentially confusing to users familiar with WHO terminology, let's explain.
+We use epochs and phases to describe the patterns in Covid death series. We first observed the patterns in the death series for locations like China and New York in the United States in late winter and early spring 2020.  As our use of the term phase is potentially confusing to users familiar with WHO terminology, let's explain.
 
 ### Table of Epochs
 | Epoch | Description | Control Chart structure |
@@ -24,7 +24,7 @@ Within any Epoch, we require at least one phase.  For example, within Epoch 1, i
 
 In other words, in our application, a phase is a distinct time period described by a distinct control chart.
 
-A location always starts in Epoch 1.  How do we handle a series in which there are rarely deaths associated with Covid after exponential growth and decline?  The algorithm for fitting in Epoch 4 is identical to the logic in Epoch 1.  The only distinction is that Epoch 1 characterizes the start of the death series.
+A location always starts in Epoch 1.  How do we handle a series with rare deaths associated with Covid after exponential growth and decline?  The algorithm for fitting in Epoch 4 is identical to the logic in Epoch 1.  The only distinction is that Epoch 1 characterizes the start of the death series.
 
 ## Who can use this project?
 
