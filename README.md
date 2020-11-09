@@ -182,7 +182,7 @@ In model_phase_change, we use the test of significance and the sign of the seria
 ### Details and limitations of the current method
 **Limit anomaly** In Epoch 3, the log transformation stretches the scale of the control limits when there are multiple days close to zero.   For example, in the Wisconsin raw data (upper limit increase in phase 4 ia above the upper limit in phase 3 despite the average value in phase 4 below the average value in phase 3. Our method implies we could expect occaisionaly  much higher values in phase 4 relative to phase 3 and not declare a change in phase.
 
-!(Wisconsin limit anomaly)[https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/images/Wisconsin%20limit%20anomaly%202020-11-08_15-56-51.jpg]
+![Wisconsin limit anomaly](https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/images/Wisconsin%20limit%20anomaly%202020-11-08_15-56-51.jpg)
 
 **Modification of 'Shewhart criterion 1':  points beyond the control limits and overdispersion**  We modified the Shewhart criterion.  Except for the initial phase of Epoch 1 or Epoch 4, we require two points above the control limits in Epochs 2 and 3 to signal the start of a new phase.  We expect to see more than 'usual' variation in the death series.  We dampen the trigger of a new phase by requiring a stronger signal.  For example, a single large value sometimes reflects a 'data dump' by the reporting entity that is not screened by our ghosting function.
 
@@ -200,9 +200,9 @@ Our method does not react to the signals within the initial 21 records even thou
 
 Similarly, there are two points below the lower limit in the sixth phase of the United States raw death series, at records 16 and 17 in the phase. Our algorithm ignores this signal of special cause in calculating the parameters of for fitting the phase.
 
-![US signal in baseline(https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/images/United%20States%20signal%20in%20baseline%202020-11-08_16-47-50.jpg)
+![US signal in baseline](https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/images/United%20States%20signal%20in%20baseline%202020-11-08_16-47-50.jpg)
 
-**Bias induced by the adjustment method**  In Epochs 2 and 3, we set zero values to missing before calculating the model fit on the log10 scale.   Eliminating the zero values has the effect of biasing the fit upwards.   We have not characterized the size of the bias.  An alternative to linear model fitted to log10 deaths:  fit a Poisson regression, possibly allowing for over-dispersion. Zero values will be handled directly as observed values.  As this is not the approach used in the initial IHI application, we did not pursue this possibility.
+**Bias induced by the adjustment method**  In Epochs 2 and 3, we set zero values to missing before calculating the model fit on the log10 scale.   Eliminating the zero values has the effect of biasing the fit upwards.   We have not characterized the size of the bias.  An alternative to linear model fitted to log10 deaths:  fit a Poisson regression, possibly allowing for over-dispersion. Zero values will be handled directly as observed values.  As this is not the approach used in the initial IHI application, we did not pursue this possibility in the current R development.
 
 Also, the adjustment procedure can produce values in the adjusted series that are larger than those in the observed series.  Consider Florida's raw death series, phase 5.  Here is the table of relevant values for the Sundays in the series.   
 
