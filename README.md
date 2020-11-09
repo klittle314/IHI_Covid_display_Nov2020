@@ -127,17 +127,12 @@ For example, Illinois shows a strong pattern of two days a week lower than the o
 
 ![Illinois series](https://raw.githubusercontent.com/klittle314/IHI_Covid_display_Nov2020/main/images/Illinois%20Raw%20Deaths%20Seasonality%202020-11-08_13-43-19.jpg)
 
-Illinois raw deaths epoch and phase start dates
- -- Epoch 1, phase 1 overall, phase 1 within epoch: 2020-03-17
- 
- -- Epoch 2, phase 2 overall, phase 1 within epoch: 2020-03-27
- -- Epoch 3, phase 3 overall, phase 1 within epoch: 2020-04-25
- 
- -- Epoch 3, phase 4 overall, phase 2 within epoch: 2020-06-13
- 
- -- Epoch 3, phase 5 overall, phase 3 within epoch: 2020-07-05
- 
- -- Epoch 3, phase 6 overall, phase 4 within epoch: 2020-10-06
+Illinois raw deaths epoch and phase start datesEpoch 1, phase 1 overall, phase 1 within epoch: 2020-03-17
+ Epoch 2, phase 2 overall, phase 1 within epoch: 2020-03-27
+ Epoch 3, phase 3 overall, phase 1 within epoch: 2020-04-25
+ Epoch 3, phase 4 overall, phase 2 within epoch: 2020-06-13
+ Epoch 3, phase 5 overall, phase 3 within epoch: 2020-07-05
+ Epoch 3, phase 6 overall, phase 4 within epoch: 2020-10-06
  
 The excerpt of the Illinois data records shows that deaths reported on Sunday and Monday are systematically lower than the other days of the week.  This appears to be an administrative source of variation in the death series, a special cause of variation, which will affect the control limits. Two low values each week will tend to inflate the variation and widen the control limits.  
 
