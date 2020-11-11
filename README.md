@@ -135,6 +135,7 @@ Illinois raw deaths epoch and phase start dates:
 | ----- | ------------- | ----------------------------- |
 | Epoch 1 | phase 1 overall | phase 1 within epoch: 2020-03-17|
 | Epoch 2 | phase 2 overall | phase 1 within epoch: 2020-03-27|
+| Epoch 3 | phase 3 overall | phase 1 within epoch: 2020-04-25|
 | Epoch 3 | phase 4 overall | phase 2 within epoch: 2020-06-13|
 | Epoch 3 | phase 5 overall | phase 3 within epoch: 2020-07-05|
 | Epoch 3 | phase 6 overall | phase 4 within epoch: 2020-10-06|
@@ -149,14 +150,14 @@ Here's the logic for adjustment:
 2.  Within each fitted phase with at least 21 records for Epochs 2 and 3 and using the linear fit to the log10 deaths:
 (a) compute the residuals as (observed - midline) on the log10 scale.  
 (b) by day of week, get the median of the residuals.   This is the adjustment for day of week.
-(c) compute the adjustment:   adjusted log10 death = log10 observed death - adjustment for day of week.
+(c) compute the log10 adjusted death:   adjusted log10 death = log10 observed death - adjustment for day of week.
 (d) compute the adjusted death as 10^adjusted log10 death
 (e) normalize the adjusted deaths so that the total adjusted deaths in the phase matches the total deaths in the phase:
                norm_adjusted death <- adjusted death * (total raw deaths/total adjusted deaths)
 (e) report the adjusted death as round(norm_adjusted death)
 3. Stitch together the adjusted data, phase by phase.
 
-Once we have the adjusted data series, apply the algorithm to get the adjusted epochs and phases.
+Once we have the adjusted data series, apply the algorithm to get the epochs and phases.
 
 The adjustment logic will fail to adjust some days of the week if the state or country reports zero deaths consistently on those days.  The failure stems from our fitting of log10 deaths:  before fitting, we set the zero deaths to missing.  This means that the day with zero deaths never enters the calculation for adjustment.  See below for discussion of this limitation to our approach. 
 
@@ -164,7 +165,7 @@ Louisiana provides a clear example of the situation, with reported deaths on Sat
 
 ![Saturday pattern](https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/images/Louisiana%20Raw%20Deaths%20Seasonality%202020-11-08_15-25-54.jpg)
 
-In the Louisiana case, our adjustment actually seems to work well: from the data series, it appears that Louisiana is reporting only six days each week for weeks starting in mid-summer and model fits should accommodate this structure. 
+In the Louisiana case, our adjustment actually seems to work well: from the data series, it appears that Louisiana is reporting only six days each week for weeks starting in mid-summer and model fits accommodate this structure. 
 
 ### computations related to the c-chart
 The function find_phase_dates calculates the c-chart center line and upper control limit in Epochs 1 and 4.  As described above, the c-chart calculations are based on several other parameters.  The c-chart calculations require at least 8 non-zero deaths; the maximum number of records used for the c-chart calculations is 21.  As the find_phase_dates function iterates through the records, the calculation stops as soon as a special cause signal is detected.  We designed the c-chart calculations to identify the tentative starting point of exponential growth and recognize this approach might not reproduce the c-chart designed by an analyst to look at a sequence of events.  An analyst might require a minimum number of records (e.g. 15 or 20) and iteratively remove points that generate special cause signal(s).  See the additional discussion below on the difference between the rules used in the first phase of Epoch 1 or 4 and subsequent phases within those epochs.
@@ -175,7 +176,7 @@ The function find_phase_dates calculates the c-chart center line and upper contr
 The code uses the median moving range to estimate 'sigma-hat' in the calculation of the individuals control chart parameters.  That's why we use the multiplier 3.14 to compute the upper and lower control limits rather than the customary 2.66 value.  The median moving range is more robust to one or two large point-to-point ranges relative to the average moving range.  Usually, use of the average moving range requires two stages:  examine moving ranges to determine if there are any that are unusually large on a chart of moving ranges; discard any ranges that exceed the upper control limit on the range chart, and recalculate the limits on the individuals chart.  We chose to use the median approach to simplify the derivation of the individuals control chart limits.
 
 #### Use of test of significance for the slope of the regression fit on log10 deaths
-In model_phase_change, we use the test of significance and the sign of the serial day coefficient to determine exponential growth, no evidence of growth or decay, or exponential decline. 
+In model_phase_change, we use the test of significance (p-value) and the sign of the serial day coefficient to determine exponential growth, no evidence of growth or decay, or exponential decline. 
 
 | Epoch | calculation |
 | ----- | ----------- |
@@ -207,7 +208,7 @@ Similarly, there are two points below the lower limit in the sixth phase of the 
 
 ![US signal in baseline](https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/images/United%20States%20signal%20in%20baseline%202020-11-08_16-47-50.jpg)
 
-**Bias induced by the adjustment method**  In Epochs 2 and 3, we set zero values to missing before calculating the model fit on the log10 scale.   Eliminating the zero values has the effect of biasing the fit upwards.   We have not characterized the size of the bias.  An alternative to linear model fitted to log10 deaths:  fit a Poisson regression, possibly allowing for over-dispersion. Zero values will be handled directly as observed values.  As this is not the approach used in the initial IHI application, we did not pursue this possibility in the current R development.
+**Bias induced by the adjustment method**  In Epochs 2 and 3, we set zero values to missing before calculating the model fit on the log10 scale.   Eliminating the zero values has the effect of biasing the fit upwards.   We have not characterized the size of the bias.  An alternative to a linear model fitted to log10 deaths:  fit a Poisson regression, possibly allowing for over-dispersion. Zero values will be handled directly as observed values.  As this is not the approach used in the initial IHI application, we did not pursue this alternative in the current R development.
 
 Also, the adjustment procedure can produce values in the adjusted series that are larger than those in the observed series.  Consider Florida's raw death series, phase 5.  Here is the table of relevant values for the Sundays in the series.   
 
@@ -225,6 +226,6 @@ Also, the adjustment procedure can produce values in the adjusted series that ar
 
 All of the log10 residuals are negative except for the record on 11 October.  Hence the median residual is negative, -0.4215182.  The adjustment rule sets the adjusted deaths as 10^(log10_Deaths - adjustment).   For 11 October, this leads to a raw adjusted value of 469.8272 = 10^(2.2504200 + 0.4215182).  The adjustment algorithm then normalizes the adjusted death series in the phase to have the same total number of deaths as the raw total deaths, which increases the value to 523.   This value is almost twice the value of the maximum observed deaths.
 
-Thus, we have problems with both the raw series and the adjusted series.  The raw data series is affected by day of week reporting; we have a special cause of variation arising from measurement reporting that affects calculation of the control limits. The adjusted data has an upward bias in the model fit and may induce records larger than any observed in the raw data.  Here's my current view:  The message in the charts may be an interpolation between the ‘raw’ and the ‘adjusted’ displays.   A display that incorporates adjusted data should allow the user to see the raw data as well to make a considered interpretation.  "Presentation of results, to be optimally useful, and to be good science, must conform to Shewhart’s rule: viz., preserve, for the uses intended, all the evidence in the original data.” (W.E. Deming, “On probability as a basis for action”, *American Statistician*, **29**, No. 4., 148)
+Thus, we have problems with both the raw series and the adjusted series.  The raw data series can show a systematic pattern day-of-week reporting; that is, the series can have a special cause of variation arising from measurement reporting that may affect the control limits. On the other hand, the adjusted data has an upward bias in the model fit and may induce records larger than any observed in the raw data.  Here's my current view:  The message in the charts should be an interpolation between the ‘raw’ and the ‘adjusted’ displays.   A display that incorporates adjusted data should allow the user also to see the raw data to make a considered interpretation.  "Presentation of results, to be optimally useful, and to be good science, must conform to Shewhart’s rule: viz., preserve, for the uses intended, all the evidence in the original data.” (W.E. Deming, “On probability as a basis for action”, *American Statistician*, **29**, No. 4., 148)
 
 
