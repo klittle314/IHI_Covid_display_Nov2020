@@ -124,18 +124,20 @@ The detect_outlier function examines each daily record to assess if the record i
 The New York Times data table provides cumulative death counts for each U.S. state or territory.  The code differences the cumulative death series to get daily deaths.  The cumulative death count series shows adjustments for 27 states and territories as of 8 November that make the series non-monotone increasing--52 records are less than previous records, within state or territory.  This means that the differenced series will have negative values.   To eliminate negative deaths in the differenced series, the function allocates the negative values to previous records so that the revised series has only non-negative values.
 
 ### adjusting
-By June, the development team saw that some locations reported deaths in a way that two days a week tended to be lower than the other five days in each calendar week.  As a result, the IHI application adjusted for a day-of-week effect.  We developed an adjustment in the R code to generate adjusted data, which is then used as input to the epochs and phases algorithm.
+By June, the development team saw that some locations reported deaths in a way that two days a week tended to be lower than the other five days in each calendar week.  As a result, the IHI application adjusted for a day-of-week effect.  We developed the R code to mimic the IHI application:  the R code generates adjusted data for each location.  The adjusted data series is then used as input to the epochs and phases algorithm.
 
-For example, Illinois shows a strong pattern of two days a week lower than the other five, relatively easy to see starting in Epoch 3, phase 1:
+For example, Illinois shows a strong pattern of two days a week lower than the other five.  The pattern is easy to see starting in Epoch 3, phase 1:
 
 ![Illinois series](https://raw.githubusercontent.com/klittle314/IHI_Covid_display_Nov2020/main/images/Illinois%20Raw%20Deaths%20Seasonality%202020-11-08_13-43-19.jpg)
 
-Illinois raw deaths epoch and phase start datesEpoch 1, phase 1 overall, phase 1 within epoch: 2020-03-17
- Epoch 2, phase 2 overall, phase 1 within epoch: 2020-03-27
- Epoch 3, phase 3 overall, phase 1 within epoch: 2020-04-25
- Epoch 3, phase 4 overall, phase 2 within epoch: 2020-06-13
- Epoch 3, phase 5 overall, phase 3 within epoch: 2020-07-05
- Epoch 3, phase 6 overall, phase 4 within epoch: 2020-10-06
+Illinois raw deaths epoch and phase start dates:
+| Epoch | overall phase | phase within epoch: start date|
+| ----- | ------------- | ----------------------------- |
+| Epoch 1 | phase 1 overall | phase 1 within epoch: 2020-03-17|
+| Epoch 2 | phase 2 overall | phase 1 within epoch: 2020-03-27|
+| Epoch 3 | phase 4 overall | phase 2 within epoch: 2020-06-13|
+| Epoch 3 | phase 5 overall | phase 3 within epoch: 2020-07-05|
+| Epoch 3 | phase 6 overall | phase 4 within epoch: 2020-10-06|
  
 The excerpt of the Illinois data records shows that deaths reported on Sunday and Monday are systematically lower than the other days of the week.  This appears to be an administrative source of variation in the death series, a special cause of variation, which will affect the control limits. Two low values each week will tend to inflate the variation and widen the control limits.  
 
