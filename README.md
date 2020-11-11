@@ -212,7 +212,7 @@ Similarly, there are two points below the lower limit in the sixth phase of the 
 
 **Bias induced by the adjustment method**  In Epochs 2 and 3, we set zero values to missing before calculating the model fit on the log10 scale.   Eliminating the zero values has the effect of biasing the fit upwards.   We have not characterized the size of the bias.  An alternative to a linear model fitted to log10 deaths:  fit a Poisson regression, possibly allowing for over-dispersion. Zero values will be handled directly as observed values.  As this is not the approach used in the initial IHI application, we did not pursue this alternative in the current R development.
 
-Also, the adjustment procedure can produce values in the adjusted series that are larger than those in the observed series.  Consider Florida's raw death series, phase 5.  Here is the table of relevant values for the Sundays in the series.   
+Also, the adjustment procedure can produce values in the adjusted series that are larger than those in the observed series.  Consider Florida's raw death series, phase 5. ![Florida induced large value]()  Here is the table of relevant values for the Sundays in the series.   
 
 |date     | weekday| New_Deaths| Deaths_adj| log10_Deaths|        adjustment| log10_residuals|
 |:----------|-------:|----------:|----------:|------------:|----------:|---------------:|
