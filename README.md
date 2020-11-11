@@ -1,4 +1,5 @@
 # R scripts to generate control chart limits used by IHI's PowerBI application
+Notes by Kevin Little, Ph.D., Informing Ecological Design, LLC [email](mailto:klittle@iecodesign.com?subject=[GitHub]IHI_Covid_display_Nov2020)
 This project implements a method based on control charts to view phases in daily reported deaths from COVID-19. The method was developed by Lloyd Provost, Shannon Provost, Rocco Perla, Gareth Parry, and Kevin Little, with an initial focus on death series and is described [here](https://academic.oup.com/intqhc/advance-article/doi/10.1093/intqhc/mzaa069/5863166).
 
 Gareth Parry used SPSS to develop the initial IHI presentation in the spring and summer of 2020.  His SPSS code created data tables for countries and U.S. states and territories.  Gareth created a PowerBI script to read these tables and created the data displays.  The IHI display is [here](http://www.ihi.org/Topics/COVID-19/Pages/COVID-19-Data-Dashboard.aspx). 
@@ -35,7 +36,7 @@ People who have a basic understanding of Shewhart control charts and want to app
 
 ## Getting Started
 
-This document describes the R code and what you need to run it yourself.  It provides sample output for you to check for successful use.
+This document describes the R code and what you need to run it yourself.  It provides sample output for you to check for successful use **not yet linked/finished**
 
 ### Prerequisites
 
@@ -61,7 +62,7 @@ if (!file.exists(data_file_state)) {
 ```
 ### Copying the code for local use
 
-[Click here to download the latest version](https://github.com/klittle314/IHI_Covid_display_Nov2020/archive/master.zip) 
+[Click here to download the latest version](https://github.com/klittle314/IHI_Covid_display_Nov2020/archive/master.zip) **link not yet active**
 
 Alternatively, if you understand how repositories work, you can fork the master branch for your use.
 
