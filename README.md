@@ -22,13 +22,13 @@ We use epochs and phases to describe the patterns in Covid death series. We firs
 
 Within any Epoch, we require at least one phase.  For example, within Epoch 1, if the algorithm does not detect exponential growth but shows an increase in average deaths, additional phases will display c-charts with means higher than the first phase.  Here's a display of the state of Arkansas death series showing multiple phases within Epoch 1.   The red dot represents a 'ghosted value', likely associated with an administrative action to report an unusually large number of deaths in one day. Note that in the IHI implementation, red dots are reserved for the start of a new phase; ghosted values are presented as light blue. See below for further discussion of ghosting.
 
-![phases within Epoch 1](https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/images/ARkansas%202%20Nov%202020.jpg)
+![phases within Epoch 1](images/ARkansas%202%20Nov%202020.jpg)
 
 In other words, in our application, a phase is a distinct time period described by a distinct control chart.
 
 A location always starts in Epoch 1.  How do we handle a series with rare deaths associated with Covid after exponential growth and decline?  The algorithm for fitting in Epoch 4 is identical to the logic in Epoch 1.  The only distinction is that Epoch 1 characterizes the start of the death series.
 
-Check the detailed table [here](https://github.com/klittle314/IHI_Covid_display_Nov2020/blob/main/Phase%20and%20Epoch%20logic%209%20November%202020%20public%20version.pdf) to see the rules for transitions from phase to phase within and between epochs.
+Check the detailed table [here](Phase%20and%20Epoch%20logic%209%20November%202020%20public%20version.pdf) to see the rules for transitions from phase to phase within and between epochs.
 
 
 ## Who can use this project?
